@@ -1,5 +1,7 @@
 package com.example.weatherapp
 
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,11 +29,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.example.weatherapp.api.NetworkResponse
 import com.example.weatherapp.api.WeatherModel
 
@@ -39,7 +46,7 @@ import com.example.weatherapp.api.WeatherModel
 fun WeatherPage(viewModel: WeatherViewModel) {
 
 var city by remember { mutableStateOf("") }
-    var weatherResult = viewModel.weatherResult.observeAsState()
+    val weatherResult = viewModel.weatherResult.observeAsState()
     Column (modifier = Modifier.fillMaxWidth().padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
     Row (modifier = Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically,horizontalArrangement = Arrangement.SpaceEvenly){
@@ -98,10 +105,12 @@ fun WeatherDetails(data : WeatherModel) {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
-
         AsyncImage(
             modifier = Modifier.size(160.dp),
-            model = "https:${data.current.condition.icon}".replace("64x64","128x128"),
+            model = ImageRequest.Builder(LocalContext.current)
+                .data("https:cdn.${data.current.condition.icon}".replace("64x64","128x128"))
+                .crossfade(true)
+                .build(),
             contentDescription = "Condition icon"
         )
         Text(
